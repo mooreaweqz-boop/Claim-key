@@ -9,194 +9,246 @@
     <style>
         * { box-sizing: border-box; }
         body { 
-            background-color: #000; 
+            background-color: #050000; 
+            /* เพิ่มแสงเรืองรองตรงกลางพื้นหลัง */
+            background: radial-gradient(circle at center, #1a0000 0%, #000000 100%);
             font-family: 'Itim', cursive, sans-serif;
             display: flex; justify-content: center; align-items: center; 
             min-height: 100vh; margin: 0; padding: 20px; 
+            overflow: hidden;
         }
+
+        /* แอนิเมชันตอนเปิดหน้าเว็บ */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.85) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
         .card { 
-            background-color: #0d0d0d; border: 2px solid #3a0b0b; border-radius: 35px; 
-            padding: 40px 30px; width: 100%; max-width: 400px; text-align: center; 
-            box-shadow: 0 0 25px rgba(255, 50, 50, 0.2); 
+            background-color: #0d0d0d; 
+            border: 2px solid #3a0b0b; 
+            border-radius: 35px; 
+            padding: 40px 30px; 
+            width: 100%; max-width: 400px; text-align: center; 
+            box-shadow: 0 15px 35px rgba(255, 0, 0, 0.15), inset 0 0 15px rgba(255, 51, 51, 0.05); 
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            position: relative;
         }
+
+        /* แอนิเมชันโลโก้ขยับ ลอยขึ้น-ลง และไฟกะพริบ */
+        @keyframes floatAndPulse {
+            0% { transform: translateY(0px); box-shadow: 0 0 15px rgba(255, 51, 51, 0.4); }
+            50% { transform: translateY(-10px); box-shadow: 0 0 35px rgba(255, 51, 51, 0.9), 0 0 10px rgba(255, 255, 255, 0.2); }
+            100% { transform: translateY(0px); box-shadow: 0 0 15px rgba(255, 51, 51, 0.4); }
+        }
+
         .logo-container { 
-            width: 120px; height: 120px; margin: 0 auto 20px auto; 
-            border-radius: 50%; border: 3px solid #ff3333; 
-            box-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
+            width: 130px; height: 130px; margin: 0 auto 25px auto; 
+            border-radius: 50%; 
+            border: 3px solid #ff3333; 
             display: flex; justify-content: center; align-items: center; 
             background-color: #141414;
-            overflow: hidden; /* ทำให้รูปไม่ล้นขอบวงกลม */
+            overflow: hidden;
+            /* เรียกใช้แอนิเมชันโลโก้ */
+            animation: floatAndPulse 3s ease-in-out infinite;
         }
         .logo-container img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* จัดให้รูปเต็มวงกลมสวยงาม */
+            object-fit: cover;
         }
-        .title { color: #fff; font-size: 30px; font-weight: bold; margin: 0 0 5px 0; letter-spacing: 1px; }
-        .title span { color: #ff3333; }
-        .subtitle { color: #d4af37; font-size: 15px; margin-bottom: 30px; }
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-label { color: #aaa; font-size: 14px; margin-bottom: 8px; display: block; padding-left: 5px; }
-        .input-field { 
-            width: 100%; background-color: #141414; border: 1px solid #262626; 
-            border-radius: 18px; padding: 15px; color: #fff; font-size: 18px; 
-            text-align: center; transition: 0.3s;
-        }
-        .input-field:focus { border-color: #ff3333; outline: none; }
-        .submit-btn { 
-            width: 100%; background: linear-gradient(180deg, #ff3333 0%, #cc0000 100%); 
-            border: none; border-radius: 20px; padding: 15px; color: white; 
-            font-size: 20px; cursor: pointer; transition: 0.2s; margin-top: 10px;
-            box-shadow: 0 5px 15px rgba(255, 51, 51, 0.3);
-            font-family: 'Itim', cursive, sans-serif;
-        }
-        .submit-btn:hover { transform: scale(1.02); box-shadow: 0 5px 20px rgba(255, 51, 51, 0.5); }
-        .submit-btn:active { transform: scale(0.98); }
         
-        /* กล่องแสดงคีย์แบบน่ารัก */
+        .title { color: #fff; font-size: 32px; font-weight: bold; margin: 0 0 5px 0; letter-spacing: 1px; }
+        .title span { 
+            color: #ff3333; 
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.5); /* แสงเงาตัวอักษร */
+        }
+        .subtitle { color: #d4af37; font-size: 15px; margin-bottom: 30px; }
+        
+        .input-group { margin-bottom: 25px; text-align: left; }
+        .input-label { color: #aaa; font-size: 15px; margin-bottom: 10px; display: block; padding-left: 5px; text-align: center; }
+        
+        .input-field { 
+            width: 100%; background-color: #141414; 
+            border: 2px solid #262626; 
+            border-radius: 18px; padding: 16px; color: #fff; font-size: 20px; 
+            text-align: center; transition: all 0.3s ease;
+        }
+        .input-field:focus { 
+            border-color: #ff3333; 
+            box-shadow: 0 0 15px rgba(255, 51, 51, 0.2);
+            outline: none; 
+            transform: scale(1.02);
+        }
+        
+        .submit-btn { 
+            width: 100%; background: linear-gradient(135deg, #ff3333 0%, #b30000 100%); 
+            border: none; border-radius: 20px; padding: 16px; color: white; 
+            font-size: 22px; cursor: pointer; transition: all 0.3s ease; margin-top: 5px;
+            box-shadow: 0 8px 20px rgba(255, 51, 51, 0.4);
+            font-family: 'Itim', cursive, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        .submit-btn:hover { 
+            transform: translateY(-3px) scale(1.02); 
+            box-shadow: 0 12px 25px rgba(255, 51, 51, 0.6); 
+        }
+        .submit-btn:active { transform: translateY(1px) scale(0.98); }
+        
+        /* แอนิเมชันกล่องคีย์เด้ง */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         #resultArea { 
             margin-top: 25px; color: #fff; display: none; padding: 20px; 
-            border-radius: 20px; background: #1a0505; border: 1.5px dashed #ff3333;
+            border-radius: 20px; background: rgba(26, 5, 5, 0.8); 
+            border: 1.5px dashed #ff3333;
             text-align: left;
+            box-shadow: 0 0 20px rgba(255, 51, 51, 0.1);
         }
+        
         .key-list {
             margin: 10px 0;
             padding-left: 0;
             list-style: none;
         }
         .key-item {
-            background: #2b0b0b;
-            padding: 8px 12px;
-            border-radius: 10px;
+            background: linear-gradient(90deg, #2b0b0b 0%, #1a0505 100%);
+            padding: 12px 15px;
+            border-radius: 12px;
             margin-bottom: 6px;
-            font-size: 18px;
+            font-size: 20px;
             color: #ffeb3b;
             word-break: break-all;
             border: 1px solid #441111;
+            text-align: center;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
         
-        /* ปุ่มคัดลอก */
         .copy-btn {
             width: 100%; background: #2b0b0b; border: 1px dashed #ff3333; 
             border-radius: 15px; padding: 12px; color: #ffeb3b; 
-            font-size: 16px; cursor: pointer; transition: 0.2s; 
+            font-size: 18px; cursor: pointer; transition: all 0.3s ease; 
             margin-top: 15px; font-family: 'Itim', cursive, sans-serif;
         }
-        .copy-btn:hover { background: #441111; }
+        .copy-btn:hover { 
+            background: #441111; 
+            box-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+            border-style: solid;
+        }
         
-        .error-msg { color: #ff3333; font-size: 14px; margin-top: 25px; }
+        .error-msg { 
+            color: #ff3333; font-size: 15px; margin-top: 20px; 
+            text-shadow: 0 0 5px rgba(255, 51, 51, 0.5);
+        }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <!-- เปลี่ยนเป็นรูปภาพจากลิงก์ที่ให้มา -->
         <div class="logo-container">
             <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528249908845351042/IMG_1880.png?ex=6a5d9d23&is=6a5c4ba3&hm=1258cef0d3504e6bfe263a18198e3ae78fd2238c6bd69536c54b77deba2388a1&" alt="REALPOOH LOGO">
         </div>
         <h1 class="title">REALPOOH <span>PROXY</span></h1>
-        <div class="subtitle">✨ ยินดีต้อนรับ! กรุณาเลือกจำนวนที่ต้องการนะ ✨</div>
+        <div class="subtitle">✨ ยินดีต้อนรับ! เลือกจำนวนวันได้เลยนะ ✨</div>
 
         <div class="input-group">
-            <label class="input-label">📅 เลือกจำนวนวันที่ต้องการรับคีย์ (1 - 9999 วัน)</label>
+            <label class="input-label">📅 จำนวนวันที่ต้องการรับคีย์ (วัน)</label>
             <input type="number" id="daysInput" min="1" max="9999" value="30" class="input-field">
-        </div>
-
-        <div class="input-group">
-            <label class="input-label">🔑 ปรับจำนวนคีย์ที่ต้องการสร้าง</label>
-            <input type="number" id="amountInput" min="1" max="10" value="1" class="input-field">
         </div>
 
         <button class="submit-btn" onclick="generateKey()">รับคีย์ 🚀</button>
 
-        <!-- กล่องแสดงผลคีย์จริง -->
         <div id="resultArea">
-            <div style="font-weight: bold; color: #ff3333;">🎉 รับคีย์สำเร็จแล้วงับ!</div>
+            <div style="font-weight: bold; color: #ff4d4d; text-align: center; font-size: 18px; text-shadow: 0 0 5px rgba(255,77,77,0.4);">🎉 รับคีย์สำเร็จแล้วงับ!</div>
             <ul id="keyList" class="key-list"></ul>
-            <div id="keyDetails" style="font-size: 14px; color: #bbb; margin-top: 10px; border-top: 1px dashed #441111; padding-top: 5px;"></div>
+            <div id="keyDetails" style="font-size: 14px; color: #bbb; margin-top: 10px; border-top: 1px dashed #441111; padding-top: 10px; text-align: center;"></div>
             
-            <!-- ปุ่มกดคัดลอกทั้งหมด -->
-            <button class="copy-btn" id="copyBtn" onclick="copyAllKeys()">📋 คัดลอกคีย์ทั้งหมด</button>
+            <button class="copy-btn" id="copyBtn" onclick="copyAllKeys()">📋 คัดลอกคีย์</button>
         </div>
 
-        <div class="error-msg" id="errorMsg" style="display:none;">งื้อออ คีย์ไม่ถูกต้องหรือหมดอายุแล้วงับ! 😭</div>
+        <div class="error-msg" id="errorMsg" style="display:none;">กรุณาระบุจำนวนวันให้ถูกต้องนะงับ! 😭</div>
     </div>
 
     <script>
-        // 🚨 [โซนตั้งค่าคีย์จริง] คุณสามารถใส่คีย์ที่ต้องการตรงนี้ได้เลย
-        const REAL_KEYS_DATABASE = {
-            '1': [
-                'pooh-1day-proxy9981',
-                'pooh-1day-proxy4532',
-                'pooh-1day-proxy1122'
-            ],
-            '30': [
-                'pooh-30day-proxy8829',
-                'pooh-30day-proxy1402',
-                'pooh-30day-proxy7753',
-                'pooh-30day-proxy9912'
-            ],
-            '9999': [
-                'pooh-9999day-proxy0001',
-                'pooh-9999day-proxy7777'
-            ]
-        };
-
-        // ตัวแปรสำหรับเก็บคีย์ที่ถูกดึงออกมาเพื่อใช้คัดลอก
-        let currentGeneratedKeys = [];
+        const usedKeysTracker = new Set(JSON.parse(localStorage.getItem('poohProxyKeys')) || []);
+        let currentGeneratedKey = "";
 
         function generateKey() {
             const days = document.getElementById('daysInput').value;
-            const amount = parseInt(document.getElementById('amountInput').value);
             const resultArea = document.getElementById('resultArea');
             const keyList = document.getElementById('keyList');
             const keyDetails = document.getElementById('keyDetails');
             const errorMsg = document.getElementById('errorMsg');
             const copyBtn = document.getElementById('copyBtn');
 
-            // ล้างข้อมูลเก่า
+            // รีเซ็ตการแสดงผล
             keyList.innerHTML = '';
-            currentGeneratedKeys = [];
+            currentGeneratedKey = "";
             resultArea.style.display = 'none';
             errorMsg.style.display = 'none';
-            copyBtn.innerText = '📋 คัดลอกคีย์ทั้งหมด'; // รีเซ็ตข้อความปุ่ม
+            copyBtn.innerText = '📋 คัดลอกคีย์';
+            copyBtn.style.background = '#2b0b0b';
 
-            if (REAL_KEYS_DATABASE[days] && REAL_KEYS_DATABASE[days].length > 0) {
-                const availableKeys = REAL_KEYS_DATABASE[days];
-                const countToGet = Math.min(amount, availableKeys.length);
-                
-                for (let i = 0; i < countToGet; i++) {
-                    const li = document.createElement('li');
-                    li.className = 'key-item';
-                    li.innerText = `🔑 ${availableKeys[i]}`;
-                    keyList.appendChild(li);
-                    
-                    // เก็บเฉพาะตัวคีย์ลงใน Array เพื่อรอคัดลอก
-                    currentGeneratedKeys.push(availableKeys[i]);
-                }
-
-                keyDetails.innerText = `อายุการใช้งาน: ${days} วัน | ได้รับทั้งหมด: ${countToGet} คีย์`;
-                resultArea.style.display = 'block';
-            } else {
+            if (!days || days < 1) {
                 errorMsg.style.display = 'block';
+                // เพิ่มแอนิเมชันสั่นเวลาแจ้งเตือน
+                errorMsg.style.animation = 'none';
+                errorMsg.offsetHeight; 
+                errorMsg.style.animation = 'popIn 0.3s ease';
+                return;
             }
+
+            let newKey = '';
+            let isDuplicate = true;
+
+            // สุ่มจนกว่าจะได้คีย์ใหม่ที่ไม่ซ้ำ
+            while (isDuplicate) {
+                const timeStamp = Date.now().toString().slice(-4);
+                const randomNum = Math.floor(10000 + Math.random() * 90000); 
+                
+                newKey = `pooh-${days}day-proxy${timeStamp}${randomNum}`;
+                
+                if (!usedKeysTracker.has(newKey)) {
+                    usedKeysTracker.add(newKey);
+                    isDuplicate = false;
+                }
+            }
+
+            // นำคีย์ไปแสดงผล
+            const li = document.createElement('li');
+            li.className = 'key-item';
+            li.innerText = `🔑 ${newKey}`;
+            keyList.appendChild(li);
+            
+            currentGeneratedKey = newKey;
+
+            // บันทึกกันซ้ำลงเบราว์เซอร์
+            localStorage.setItem('poohProxyKeys', JSON.stringify(Array.from(usedKeysTracker)));
+
+            keyDetails.innerText = `อายุการใช้งาน: ${days} วัน`;
+            
+            // เพิ่มแอนิเมชันกล่องตอนเด้งขึ้นมา
+            resultArea.style.animation = 'none';
+            resultArea.offsetHeight;
+            resultArea.style.animation = 'slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+            resultArea.style.display = 'block';
         }
 
-        // ฟังก์ชันสำหรับคัดลอกคีย์
         function copyAllKeys() {
-            if (currentGeneratedKeys.length === 0) return;
+            if (!currentGeneratedKey) return;
 
-            // นำคีย์มาต่อกันโดยขึ้นบรรทัดใหม่
-            const textToCopy = currentGeneratedKeys.join('\n');
-
-            // สั่งคัดลอกลง Clipboard
-            navigator.clipboard.writeText(textToCopy).then(() => {
+            navigator.clipboard.writeText(currentGeneratedKey).then(() => {
                 const copyBtn = document.getElementById('copyBtn');
                 copyBtn.innerText = '✅ คัดลอกเรียบร้อยแล้ว!';
+                copyBtn.style.background = '#441111'; // เปลี่ยนสีปุ่มตอนก๊อปปี้เสร็จ
                 
-                // คืนค่าข้อความปุ่มกลับมาหลังผ่านไป 2 วินาที
                 setTimeout(() => {
-                    copyBtn.innerText = '📋 คัดลอกคีย์ทั้งหมด';
+                    copyBtn.innerText = '📋 คัดลอกคีย์';
+                    copyBtn.style.background = '#2b0b0b';
                 }, 2000);
             }).catch(err => {
                 console.error('คัดลอกไม่สำเร็จ: ', err);
