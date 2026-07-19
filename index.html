@@ -10,7 +10,7 @@
         * { box-sizing: border-box; }
         body { 
             background-color: #000; 
-            font-family: 'Itim', cursive, sans-serif; /* เปลี่ยนเป็นฟอนต์น่ารัก */
+            font-family: 'Itim', cursive, sans-serif;
             display: flex; justify-content: center; align-items: center; 
             min-height: 100vh; margin: 0; padding: 20px; 
         }
@@ -42,14 +42,42 @@
             border: none; border-radius: 20px; padding: 15px; color: white; 
             font-size: 20px; cursor: pointer; transition: 0.2s; margin-top: 10px;
             box-shadow: 0 5px 15px rgba(255, 51, 51, 0.3);
+            font-family: 'Itim', cursive, sans-serif;
         }
         .submit-btn:hover { transform: scale(1.02); box-shadow: 0 5px 20px rgba(255, 51, 51, 0.5); }
         .submit-btn:active { transform: scale(0.98); }
+        
+        /* กล่องแสดงคีย์แบบน่ารัก */
         #resultArea { 
             margin-top: 25px; color: #fff; display: none; padding: 20px; 
             border-radius: 20px; background: #1a0505; border: 1.5px dashed #ff3333;
+            text-align: left;
         }
-        .key-text { font-size: 20px; color: #ffeb3b; word-break: break-all; margin-bottom: 5px; }
+        .key-list {
+            margin: 10px 0;
+            padding-left: 0;
+            list-style: none;
+        }
+        .key-item {
+            background: #2b0b0b;
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            font-size: 18px;
+            color: #ffeb3b;
+            word-break: break-all;
+            border: 1px solid #441111;
+        }
+        
+        /* ปุ่มคัดลอก */
+        .copy-btn {
+            width: 100%; background: #2b0b0b; border: 1px dashed #ff3333; 
+            border-radius: 15px; padding: 12px; color: #ffeb3b; 
+            font-size: 16px; cursor: pointer; transition: 0.2s; 
+            margin-top: 15px; font-family: 'Itim', cursive, sans-serif;
+        }
+        .copy-btn:hover { background: #441111; }
+        
         .error-msg { color: #ff3333; font-size: 14px; margin-top: 25px; }
     </style>
 </head>
@@ -57,7 +85,6 @@
 
     <div class="card">
         <div class="logo-container">
-            <!-- ใส่รูปโลโก้ของคุณตรงนี้ได้เลย -->
             <span style="color: #ff3333; font-size: 32px; font-weight: bold;">RP</span>
         </div>
         <h1 class="title">REALPOOH <span>PROXY</span></h1>
@@ -65,37 +92,108 @@
 
         <div class="input-group">
             <label class="input-label">📅 เลือกจำนวนวันที่ต้องการรับคีย์ (1 - 9999 วัน)</label>
-            <input type="number" id="daysInput" min="1" max="9999" value="1" class="input-field">
+            <input type="number" id="daysInput" min="1" max="9999" value="30" class="input-field">
         </div>
 
         <div class="input-group">
             <label class="input-label">🔑 ปรับจำนวนคีย์ที่ต้องการสร้าง</label>
-            <input type="number" id="amountInput" min="1" value="1" class="input-field">
+            <input type="number" id="amountInput" min="1" max="10" value="1" class="input-field">
         </div>
 
         <button class="submit-btn" onclick="generateKey()">รับคีย์ 🚀</button>
 
+        <!-- กล่องแสดงผลคีย์จริง -->
         <div id="resultArea">
-            <div id="generatedKey" class="key-text"></div>
-            <div id="keyDetails" style="font-size: 14px; color: #bbb;"></div>
+            <div style="font-weight: bold; color: #ff3333;">🎉 รับคีย์สำเร็จแล้วงับ!</div>
+            <ul id="keyList" class="key-list"></ul>
+            <div id="keyDetails" style="font-size: 14px; color: #bbb; margin-top: 10px; border-top: 1px dashed #441111; padding-top: 5px;"></div>
+            
+            <!-- ปุ่มกดคัดลอกทั้งหมด -->
+            <button class="copy-btn" id="copyBtn" onclick="copyAllKeys()">📋 คัดลอกคีย์ทั้งหมด</button>
         </div>
 
-        <div class="error-msg">งื้อออ คีย์ไม่ถูกต้องหรือหมดอายุแล้วงับ! 😭</div>
+        <div class="error-msg" id="errorMsg" style="display:none;">งื้อออ คีย์ไม่ถูกต้องหรือหมดอายุแล้วงับ! 😭</div>
     </div>
 
     <script>
+        // 🚨 [โซนตั้งค่าคีย์จริง]
+        const REAL_KEYS_DATABASE = {
+            '1': [
+                'pooh-1day-proxy9981',
+                'pooh-1day-proxy4532',
+                'pooh-1day-proxy1122'
+            ],
+            '30': [
+                'pooh-30day-proxy8829',
+                'pooh-30day-proxy1402',
+                'pooh-30day-proxy7753',
+                'pooh-30day-proxy9912'
+            ],
+            '9999': [
+                'pooh-9999day-proxy0001',
+                'pooh-9999day-proxy7777'
+            ]
+        };
+
+        // ตัวแปรสำหรับเก็บคีย์ที่ถูกดึงออกมาเพื่อใช้คัดลอก
+        let currentGeneratedKeys = [];
+
         function generateKey() {
             const days = document.getElementById('daysInput').value;
-            const amount = document.getElementById('amountInput').value;
-            
-            if (!days || !amount) return;
+            const amount = parseInt(document.getElementById('amountInput').value);
+            const resultArea = document.getElementById('resultArea');
+            const keyList = document.getElementById('keyList');
+            const keyDetails = document.getElementById('keyDetails');
+            const errorMsg = document.getElementById('errorMsg');
+            const copyBtn = document.getElementById('copyBtn');
 
-            const randomNum = Math.floor(1000 + Math.random() * 9000);
-            const key = `pooh-${days}day-proxy${randomNum}`;
-            
-            document.getElementById('generatedKey').innerText = "🔑 " + key;
-            document.getElementById('keyDetails').innerText = `อายุการใช้งาน: ${days} วัน | จำนวน: ${amount} คีย์`;
-            document.getElementById('resultArea').style.display = 'block';
+            // ล้างข้อมูลเก่า
+            keyList.innerHTML = '';
+            currentGeneratedKeys = [];
+            resultArea.style.display = 'none';
+            errorMsg.style.display = 'none';
+            copyBtn.innerText = '📋 คัดลอกคีย์ทั้งหมด'; // รีเซ็ตข้อความปุ่ม
+
+            if (REAL_KEYS_DATABASE[days] && REAL_KEYS_DATABASE[days].length > 0) {
+                const availableKeys = REAL_KEYS_DATABASE[days];
+                const countToGet = Math.min(amount, availableKeys.length);
+                
+                for (let i = 0; i < countToGet; i++) {
+                    const li = document.createElement('li');
+                    li.className = 'key-item';
+                    li.innerText = `🔑 ${availableKeys[i]}`;
+                    keyList.appendChild(li);
+                    
+                    // เก็บเฉพาะตัวคีย์ลงใน Array เพื่อรอคัดลอก
+                    currentGeneratedKeys.push(availableKeys[i]);
+                }
+
+                keyDetails.innerText = `อายุการใช้งาน: ${days} วัน | ได้รับทั้งหมด: ${countToGet} คีย์`;
+                resultArea.style.display = 'block';
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        // ฟังก์ชันสำหรับคัดลอกคีย์
+        function copyAllKeys() {
+            if (currentGeneratedKeys.length === 0) return;
+
+            // นำคีย์มาต่อกันโดยขึ้นบรรทัดใหม่
+            const textToCopy = currentGeneratedKeys.join('\n');
+
+            // สั่งคัดลอกลง Clipboard
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const copyBtn = document.getElementById('copyBtn');
+                copyBtn.innerText = '✅ คัดลอกเรียบร้อยแล้ว!';
+                
+                // คืนค่าข้อความปุ่มกลับมาหลังผ่านไป 2 วินาที
+                setTimeout(() => {
+                    copyBtn.innerText = '📋 คัดลอกคีย์ทั้งหมด';
+                }, 2000);
+            }).catch(err => {
+                console.error('คัดลอกไม่สำเร็จ: ', err);
+            });
         }
     </script>
 </body>
