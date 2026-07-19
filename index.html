@@ -25,6 +25,12 @@
             box-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
             display: flex; justify-content: center; align-items: center; 
             background-color: #141414;
+            overflow: hidden; /* ทำให้รูปไม่ล้นขอบวงกลม */
+        }
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* จัดให้รูปเต็มวงกลมสวยงาม */
         }
         .title { color: #fff; font-size: 30px; font-weight: bold; margin: 0 0 5px 0; letter-spacing: 1px; }
         .title span { color: #ff3333; }
@@ -84,8 +90,9 @@
 <body>
 
     <div class="card">
+        <!-- เปลี่ยนเป็นรูปภาพจากลิงก์ที่ให้มา -->
         <div class="logo-container">
-            <span style="color: #ff3333; font-size: 32px; font-weight: bold;">RP</span>
+            <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528249908845351042/IMG_1880.png?ex=6a5d9d23&is=6a5c4ba3&hm=1258cef0d3504e6bfe263a18198e3ae78fd2238c6bd69536c54b77deba2388a1&" alt="REALPOOH LOGO">
         </div>
         <h1 class="title">REALPOOH <span>PROXY</span></h1>
         <div class="subtitle">✨ ยินดีต้อนรับ! กรุณาเลือกจำนวนที่ต้องการนะ ✨</div>
@@ -116,7 +123,7 @@
     </div>
 
     <script>
-        // 🚨 [โซนตั้งค่าคีย์จริง]
+        // 🚨 [โซนตั้งค่าคีย์จริง] คุณสามารถใส่คีย์ที่ต้องการตรงนี้ได้เลย
         const REAL_KEYS_DATABASE = {
             '1': [
                 'pooh-1day-proxy9981',
