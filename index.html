@@ -77,7 +77,7 @@
             background-color: #141414; 
             border: 2px solid #262626; 
             border-radius: 18px; padding: 16px; color: #fff; font-size: 20px; 
-            text-align: center; transition: all 0.3s ease;
+            text-align: center; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             font-family: 'Itim', cursive, sans-serif;
         }
         
@@ -168,15 +168,16 @@
             <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528249908845351042/IMG_1880.png?ex=6a5d9d23&is=6a5c4ba3&hm=1258cef0d3504e6bfe263a18198e3ae78fd2238c6bd69536c54b77deba2388a1&" alt="REALPOOH LOGO">
         </div>
         <h1 class="title">REALPOOH <span>PROXY</span></h1>
-        <div class="subtitle">✨ ยินดีต้อนรับ! เลือกจำนวนเวลาได้เลยนะ ✨</div>
+        <div class="subtitle">✨ ยินดีต้อนรับ! เลือกประเภทเวลาได้เลยนะ ✨</div>
 
         <div class="input-group">
-            <label class="input-label">⏳ ระบุจำนวนเวลาที่ต้องการรับคีย์</label>
+            <label class="input-label" id="inputLabel">⏳ ระบุจำนวนเวลาที่ต้องการรับคีย์</label>
             <div class="input-row">
                 <input type="number" id="timeInput" min="1" max="9999" value="30" class="input-field">
-                <select id="timeUnit" class="input-field">
+                <select id="timeUnit" class="input-field" onchange="handleUnitChange()">
                     <option value="day">วัน</option>
                     <option value="hr">ชั่วโมง</option>
+                    <option value="inf">ถาวร</option>
                 </select>
             </div>
         </div>
@@ -198,9 +199,24 @@
         const usedKeysTracker = new Set(JSON.parse(localStorage.getItem('poohProxyKeys')) || []);
         let currentGeneratedKey = "";
 
+        // ฟังก์ชันจัดการตอนเปลี่ยนหน่วยเวลา (ถ้าเลือกถาวร ให้ซ่อนช่องกรอกตัวเลข)
+        function handleUnitChange() {
+            const timeInput = document.getElementById('timeInput');
+            const timeUnit = document.getElementById('timeUnit').value;
+            const inputLabel = document.getElementById('inputLabel');
+
+            if (timeUnit === 'inf') {
+                timeInput.style.display = 'none';
+                inputLabel.innerText = '♾️ คีย์รูปแบบถาวร';
+            } else {
+                timeInput.style.display = 'block';
+                inputLabel.innerText = '⏳ ระบุจำนวนเวลาที่ต้องการรับคีย์';
+            }
+        }
+
         function generateKey() {
             const timeValue = document.getElementById('timeInput').value;
-            const timeUnit = document.getElementById('timeUnit').value; // 'day' หรือ 'hr'
+            const timeUnit = document.getElementById('timeUnit').value; // 'day', 'hr', หรือ 'inf'
             
             const resultArea = document.getElementById('resultArea');
             const keyList = document.getElementById('keyList');
@@ -216,9 +232,9 @@
             copyBtn.innerText = '📋 คัดลอกคีย์';
             copyBtn.style.background = '#2b0b0b';
 
-            if (!timeValue || timeValue < 1) {
+            // ตรวจสอบความถูกต้อง (ถ้าไม่ใช่คีย์ถาวร ต้องใส่ตัวเลขที่มากกว่า 0)
+            if (timeUnit !== 'inf' && (!timeValue || timeValue < 1)) {
                 errorMsg.style.display = 'block';
-                // เพิ่มแอนิเมชันสั่นเวลาแจ้งเตือน
                 errorMsg.style.animation = 'none';
                 errorMsg.offsetHeight; 
                 errorMsg.style.animation = 'popIn 0.3s ease';
@@ -233,8 +249,14 @@
                 const timeStamp = Date.now().toString().slice(-4);
                 const randomNum = Math.floor(10000 + Math.random() * 90000); 
                 
-                // รูปแบบคีย์จะเปลี่ยนตามหน่วยที่เลือก เช่น pooh-24hr-proxy... หรือ pooh-30day-proxy...
-                newKey = `pooh-${timeValue}${timeUnit}-proxy${timeStamp}${randomNum}`;
+                // รูปแบบคีย์
+                if (timeUnit === 'inf') {
+                    // ถ้าถาวรจะได้: pooh-inf-proxyXXXXYYYYY
+                    newKey = `pooh-inf-proxy${timeStamp}${randomNum}`;
+                } else {
+                    // ถ้าปกติจะได้: pooh-30day-proxy... หรือ pooh-12hr-proxy...
+                    newKey = `pooh-${timeValue}${timeUnit}-proxy${timeStamp}${randomNum}`;
+                }
                 
                 if (!usedKeysTracker.has(newKey)) {
                     usedKeysTracker.add(newKey);
@@ -254,8 +276,15 @@
             localStorage.setItem('poohProxyKeys', JSON.stringify(Array.from(usedKeysTracker)));
 
             // แสดงรายละเอียดอายุการใช้งาน
-            const unitDisplay = timeUnit === 'day' ? 'วัน' : 'ชั่วโมง';
-            keyDetails.innerText = `อายุการใช้งาน: ${timeValue} ${unitDisplay}`;
+            let detailText = '';
+            if (timeUnit === 'day') {
+                detailText = `อายุการใช้งาน: ${timeValue} วัน`;
+            } else if (timeUnit === 'hr') {
+                detailText = `อายุการใช้งาน: ${timeValue} ชั่วโมง`;
+            } else {
+                detailText = `อายุการใช้งาน: ถาวร (ตลอดชีพ) ♾️`;
+            }
+            keyDetails.innerText = detailText;
             
             // เพิ่มแอนิเมชันกล่องตอนเด้งขึ้นมา
             resultArea.style.animation = 'none';
