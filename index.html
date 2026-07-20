@@ -68,12 +68,27 @@
         .input-group { margin-bottom: 25px; text-align: left; }
         .input-label { color: #aaa; font-size: 15px; margin-bottom: 10px; display: block; padding-left: 5px; text-align: center; }
         
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
         .input-field { 
-            width: 100%; background-color: #141414; 
+            background-color: #141414; 
             border: 2px solid #262626; 
             border-radius: 18px; padding: 16px; color: #fff; font-size: 20px; 
             text-align: center; transition: all 0.3s ease;
+            font-family: 'Itim', cursive, sans-serif;
         }
+        
+        #timeInput { flex: 2; width: 100%; }
+        #timeUnit { flex: 1; width: 100%; cursor: pointer; }
+        
+        #timeUnit option {
+            background-color: #141414;
+            color: #fff;
+        }
+
         .input-field:focus { 
             border-color: #ff3333; 
             box-shadow: 0 0 15px rgba(255, 51, 51, 0.2);
@@ -153,11 +168,17 @@
             <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528249908845351042/IMG_1880.png?ex=6a5d9d23&is=6a5c4ba3&hm=1258cef0d3504e6bfe263a18198e3ae78fd2238c6bd69536c54b77deba2388a1&" alt="REALPOOH LOGO">
         </div>
         <h1 class="title">REALPOOH <span>PROXY</span></h1>
-        <div class="subtitle">✨ ยินดีต้อนรับ! เลือกจำนวนวันได้เลยนะ ✨</div>
+        <div class="subtitle">✨ ยินดีต้อนรับ! เลือกจำนวนเวลาได้เลยนะ ✨</div>
 
         <div class="input-group">
-            <label class="input-label">📅 จำนวนวันที่ต้องการรับคีย์ (วัน)</label>
-            <input type="number" id="daysInput" min="1" max="9999" value="30" class="input-field">
+            <label class="input-label">⏳ ระบุจำนวนเวลาที่ต้องการรับคีย์</label>
+            <div class="input-row">
+                <input type="number" id="timeInput" min="1" max="9999" value="30" class="input-field">
+                <select id="timeUnit" class="input-field">
+                    <option value="day">วัน</option>
+                    <option value="hr">ชั่วโมง</option>
+                </select>
+            </div>
         </div>
 
         <button class="submit-btn" onclick="generateKey()">รับคีย์ 🚀</button>
@@ -170,7 +191,7 @@
             <button class="copy-btn" id="copyBtn" onclick="copyAllKeys()">📋 คัดลอกคีย์</button>
         </div>
 
-        <div class="error-msg" id="errorMsg" style="display:none;">กรุณาระบุจำนวนวันให้ถูกต้องนะงับ! 😭</div>
+        <div class="error-msg" id="errorMsg" style="display:none;">กรุณาระบุจำนวนเวลาให้ถูกต้องนะงับ! 😭</div>
     </div>
 
     <script>
@@ -178,7 +199,9 @@
         let currentGeneratedKey = "";
 
         function generateKey() {
-            const days = document.getElementById('daysInput').value;
+            const timeValue = document.getElementById('timeInput').value;
+            const timeUnit = document.getElementById('timeUnit').value; // 'day' หรือ 'hr'
+            
             const resultArea = document.getElementById('resultArea');
             const keyList = document.getElementById('keyList');
             const keyDetails = document.getElementById('keyDetails');
@@ -193,7 +216,7 @@
             copyBtn.innerText = '📋 คัดลอกคีย์';
             copyBtn.style.background = '#2b0b0b';
 
-            if (!days || days < 1) {
+            if (!timeValue || timeValue < 1) {
                 errorMsg.style.display = 'block';
                 // เพิ่มแอนิเมชันสั่นเวลาแจ้งเตือน
                 errorMsg.style.animation = 'none';
@@ -210,7 +233,8 @@
                 const timeStamp = Date.now().toString().slice(-4);
                 const randomNum = Math.floor(10000 + Math.random() * 90000); 
                 
-                newKey = `pooh-${days}day-proxy${timeStamp}${randomNum}`;
+                // รูปแบบคีย์จะเปลี่ยนตามหน่วยที่เลือก เช่น pooh-24hr-proxy... หรือ pooh-30day-proxy...
+                newKey = `pooh-${timeValue}${timeUnit}-proxy${timeStamp}${randomNum}`;
                 
                 if (!usedKeysTracker.has(newKey)) {
                     usedKeysTracker.add(newKey);
@@ -229,7 +253,9 @@
             // บันทึกกันซ้ำลงเบราว์เซอร์
             localStorage.setItem('poohProxyKeys', JSON.stringify(Array.from(usedKeysTracker)));
 
-            keyDetails.innerText = `อายุการใช้งาน: ${days} วัน`;
+            // แสดงรายละเอียดอายุการใช้งาน
+            const unitDisplay = timeUnit === 'day' ? 'วัน' : 'ชั่วโมง';
+            keyDetails.innerText = `อายุการใช้งาน: ${timeValue} ${unitDisplay}`;
             
             // เพิ่มแอนิเมชันกล่องตอนเด้งขึ้นมา
             resultArea.style.animation = 'none';
